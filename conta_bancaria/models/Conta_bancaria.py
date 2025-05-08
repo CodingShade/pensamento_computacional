@@ -21,18 +21,21 @@ class Conta_bancaria:
         self.limite = limite
         self.historico = historico
 
-    def depositar(self, valor):
+    def depositar(self, valor, remetente = None):
         """
         Metodo que realiza o deposito na conta bancaria.
         Entrada: valor(float)
         Return: True se a operação foi realizada com sucesso
                 False se a operação não foi realizada
         """
+        op = 1
+        if (remetente != None):
+            op = 2
         if (valor > 0 ):
             self.saldo += valor
-            self.historico.append({"op": 1,
-                                   "remetente": self.titular,
-                                   "destinatario": "",
+            self.historico.append({"op": op,
+                                   "remetente": remetente,
+                                   "destinatario": self.titular,
                                    "valor": valor,
                                    "saldo": self.saldo,
                                    "dataetempo": int(time.time())})
@@ -43,12 +46,15 @@ class Conta_bancaria:
             return False
 
 
-    def sacar(self, valor):
+    def sacar(self, valor, destinatario = None):
+        op = 0
+        if (destinatario != None):
+            op = 2
         if (valor <= self.saldo):
             self.saldo -= valor
-            self.historico.append({"op": 0,
+            self.historico.append({"op": op,
                                    "remetente": self.titular,
-                                   "destinatario": "",
+                                   "destinatario": destinatario,
                                    "valor": valor,
                                    "saldo": self.saldo,
                                    "dataetempo": int(time.time())})
@@ -66,11 +72,18 @@ class Conta_bancaria:
             else:
                 print("Operação com limite cancelada!")
         return False
-    '''
-    def tranferencia(self, valor, nome):
-        if (valor <= self.saldo):
-            self.saldo -= valor
-            '''
+    
+    def transferencia(self, destinatario, valor):
+        '''
+        Objetivo: método para transferir um valor entre duas contas.
+        Entradas: valor(float) e obj Conta_bancaria do destinatário.
+        Saída: Se ok -> True, Se NOK -> False.
+        '''
+        # se o saque ocorrer com sucesso
+        if self.sacar(valor, destinatario.titular): #valor = o que quero mudar e destinatario.titular = pra quem quero mandar
+            # deposita na conta do destinatario
+            destinatario.depositar(valor, self.titular)
+            
 
 
 
@@ -85,4 +98,6 @@ class Conta_bancaria:
                     "Valor: ", transacao["valor"],
                     "Data e tempo: ",
                     str(dt.tm_hour) + ":" + str(dt.tm_min) + ":" + str(dt.tm_sec) , str(dt.tm_mday) + "/" + str(dt.tm_mon) + "/" + str(dt.tm_year))
-            
+
+    
+
