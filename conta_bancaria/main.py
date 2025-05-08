@@ -21,7 +21,10 @@ while True:
         saldo = ("Digite seu saldo atual: ")
         if (saldo < 0):
             print("Valor invalido!")
-        
+        else:
+            banco.append(Conta_bancaria(nome, saldo, 500, []))
+    else:
+        break        
     
 
 
