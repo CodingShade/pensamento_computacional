@@ -1,103 +1,144 @@
-import time
+1
+# Lista global para armazenar contas bancárias
+contas = []
 
+def criar_conta():
+    print("\n--- Criar Nova Conta ---")
+    titular = input("Nome do titular: ")
+    saldo = float(input("Saldo inicial: R$ "))
+    limite = float(input("Limite de crédito: R$ "))
+    nova_conta = (titular, saldo, limite, [])
+    contas.append(nova_conta)
+    print(f"Conta criada com sucesso para {titular}!")
 
-class Conta_bancaria:
+def encontrar_conta(titular):
+    for conta in contas:
+        if conta.titular.lower() == titular.lower():
+            return conta
+    return None
 
-    '''
-    Classe que implementa métodos para manipular uma conta bancaria.add()
-    Atributos: titular (str), saldo(float), limite(float) e historicos (lista de dicionarios)
+def exibir_saldo():
+    print("\n--- Exibir Saldo ---")
+    titular = input("Nome do titular da conta: ")
+    conta = encontrar_conta(titular)
+    if conta:
+        print(f"Saldo atual de {conta.titular}: R$ {conta.saldo:.2f}")
+    else:
+        print("Conta não encontrada!")
 
-    OBS: Operações no histórico: 0 - sacar, 1 - depositar, 2 - tranferir
-    '''
+def sacar():
+    print("\n--- Sacar ---")
+    titular = input("Nome do titular da conta: ")
+    conta = encontrar_conta(titular)
+    if conta:
+        valor = float(input("Valor a sacar: R$ "))
+        conta.sacar(valor)
+    else:
+        print("Conta não encontrada!")
 
-    def __init__(self, titular, saldo, limite, historico):
+def depositar():
+    print("\n--- Depositar ---")
+    titular = input("Nome do titular da conta: ")
+    conta = encontrar_conta(titular)
+    if conta:
+        valor = float(input("Valor a depositar: R$ "))
+        conta.depositar(valor)
+    else:
+        print("Conta não encontrada!")
 
-        """
-        Construtor da classe Conta_bancaria
-        """
+def transferir():
+    print("\n--- Transferir ---")
+    remetente = input("Nome do titular da conta de origem: ")
+    conta_remetente = encontrar_conta(remetente)
+    if not conta_remetente:
+        print("Conta de origem não encontrada!")
+        return
 
-        self.titular = titular
-        self.saldo = saldo
-        self.limite = limite
-        self.historico = historico
+    destinatario = input("Nome do titular da conta de destino: ")
+    conta_destinatario = encontrar_conta(destinatario)
+    if not conta_destinatario:
+        print("Conta de destino não encontrada!")
+        return
 
-    def depositar(self, valor, remetente = None):
-        """
-        Metodo que realiza o deposito na conta bancaria.
-        Entrada: valor(float)
-        Return: True se a operação foi realizada com sucesso
-                False se a operação não foi realizada
-        """
-        op = 1
-        if (remetente != None):
-            op = 2
-        if (valor > 0 ):
-            self.saldo += valor
-            self.historico.append({"op": op,
-                                   "remetente": remetente,
-                                   "destinatario": self.titular,
-                                   "valor": valor,
-                                   "saldo": self.saldo,
-                                   "dataetempo": int(time.time())})
-            print("Deposito realizado!")
-            return True
-        else:
-            print(f"O valor {valor} é invalido!")
-            return False
+    valor = float(input("Valor a transferir: R$ "))
+    conta_remetente.transferencia(conta_destinatario, valor)
 
+def exibir_historico():
+    print("\n--- Histórico de Transações ---")
+    titular = input("Nome do titular da conta: ")
+    conta = encontrar_conta(titular)
+    if conta:
+        conta.exibir_historico()
+    else:
+        print("Conta não encontrada!")
 
-    def sacar(self, valor, destinatario = None):
-        op = 0
-        if (destinatario != None):
-            op = 2
-        if (valor <= self.saldo):
-            self.saldo -= valor
-            self.historico.append({"op": op,
-                                   "remetente": self.titular,
-                                   "destinatario": destinatario,
-                                   "valor": valor,
-                                   "saldo": self.saldo,
-                                   "dataetempo": int(time.time())})
-            print("Saque realizado!")
-            return True
-        else:
-            a = input(f"Deseja utilizar o limite? (R$ {self.limite}) [s,n]")
-            if (a == "s"):
-                if(self.saldo + self.limite) >= valor:
-                    self.saldo -= valor
-                    print("Saque realizado!")
-                    return True
-                else:
-                    print("Saldo e limite insuficientes!")
+def excluir_conta():
+    print("\n--- Excluir Conta ---")
+    titular = input("Nome do titular da conta a ser excluída: ")
+    conta = encontrar_conta(titular)
+    if not conta:
+        print("Conta não encontrada!")
+        return
+
+    # Verificar saldo
+    if conta.saldo > 0:
+        print(f"Saldo restante: R$ {conta.saldo:.2f}")
+        opcao = input("Deseja transferir o saldo para outra conta? (s/n): ").lower()
+        if opcao == 's':
+            destinatario = input("Nome do titular da conta de destino: ")
+            conta_destino = encontrar_conta(destinatario)
+            if conta_destino:
+                conta.transferencia(conta_destino, conta.saldo)
             else:
-                print("Operação com limite cancelada!")
-        return False
-    
-    def transferencia(self, destinatario, valor):
-        '''
-        Objetivo: método para transferir um valor entre duas contas.
-        Entradas: valor(float) e obj Conta_bancaria do destinatário.
-        Saída: Se ok -> True, Se NOK -> False.
-        '''
-        # se o saque ocorrer com sucesso
-        if self.sacar(valor, destinatario.titular): #valor = o que quero mudar e destinatario.titular = pra quem quero mandar
-            # deposita na conta do destinatario
-            destinatario.depositar(valor, self.titular)
-            
+                print("Conta de destino não encontrada!")
+                return
+    elif conta.saldo < 0:
+        print(f"Saldo negativo: R$ {conta.saldo:.2f}")
+        opcao = input("Deseja depositar para zerar a conta? (s/n): ").lower()
+        if opcao == 's':
+            valor = abs(conta.saldo)
+            conta.depositar(valor)
+        else:
+            print("Não é possível excluir a conta com saldo negativo.")
+            return
 
+    # Remover a conta da lista
+    contas.remove(conta)
+    print(f"Conta de {conta.titular} excluída com sucesso!")
 
+def menu():
+    while True:
+        print("\n=== Menu Bancário ===")
+        print("1: Criar conta")
+        print("2: Exibir saldo")
+        print("3: Sacar")
+        print("4: Depositar")
+        print("5: Realizar transferência")
+        print("6: Exibir histórico de transações")
+        print("7: Excluir conta")
+        print("0: Sair")
 
-    def exibir_historico(self):
-        print(f"Histórico de transações:")
-        for transacao in self.historico:
-            dt = time.localtime(transacao["dataetempo"])
-            print("Op: ", transacao["op"],
-                    "Remetente: ", transacao["remetente"],
-                    "Destinatario: ", transacao["destinatario"],
-                    "Saldo: ",  transacao["saldo"],
-                    "Valor: ", transacao["valor"],
-                    "Data e tempo: ",
-                    str(dt.tm_hour) + ":" + str(dt.tm_min) + ":" + str(dt.tm_sec) , str(dt.tm_mday) + "/" + str(dt.tm_mon) + "/" + str(dt.tm_year))
+        opcao = input("Escolha uma opção: ")
 
-    
+        if opcao == "1":
+            criar_conta()
+        elif opcao == "2":
+            exibir_saldo()
+        elif opcao == "3":
+            sacar()
+        elif opcao == "4":
+            depositar()
+        elif opcao == "5":
+            transferir()
+        elif opcao == "6":
+            exibir_historico()
+        elif opcao == "7":
+            excluir_conta()
+        elif opcao == "0":
+            print("Saindo do sistema...")
+            break
+        else:
+            print("Opção inválida!")
 
+if __name__ == "__main__":
+    menu()
