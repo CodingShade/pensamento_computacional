@@ -1,144 +1,80 @@
-1
-# Lista global para armazenar contas bancárias
-contas = []
+class ContaBancaria:
 
-def criar_conta():
-    print("\n--- Criar Nova Conta ---")
-    titular = input("Nome do titular: ")
-    saldo = float(input("Saldo inicial: R$ "))
-    limite = float(input("Limite de crédito: R$ "))
-    nova_conta = (titular, saldo, limite, [])
-    contas.append(nova_conta)
-    print(f"Conta criada com sucesso para {titular}!")
+    def __init__(self, titular, pix, saldo_inicial=0, limite=0):
+        self.titular = titular
+        self.saldo = saldo_inicial
+        self.limite = limite
+        self.ativo = False
+        self.pix = pix
+        self.historico = []
 
-def encontrar_conta(titular):
-    for conta in contas:
-        if conta.titular.lower() == titular.lower():
-            return conta
-    return None
+    def __str__(self):
+        status = "Ativa" if self.ativo else "Inativa"
+        return f"Conta de {self.titular} | Saldo: R${self.saldo:.2f} | Limite: R${self.limite:.2f} | Status: {status}"
 
-def exibir_saldo():
-    print("\n--- Exibir Saldo ---")
-    titular = input("Nome do titular da conta: ")
-    conta = encontrar_conta(titular)
-    if conta:
-        print(f"Saldo atual de {conta.titular}: R$ {conta.saldo:.2f}")
-    else:
-        print("Conta não encontrada!")
+    def ativar_conta(self):
+        if not self.ativo:
+            self.ativo = True
+            self.registrar_transacao("Conta ativada")
+            print(f"Conta de {self.titular} ativada com sucesso!")
+        else:
+            print("A conta já está ativa.")
 
-def sacar():
-    print("\n--- Sacar ---")
-    titular = input("Nome do titular da conta: ")
-    conta = encontrar_conta(titular)
-    if conta:
-        valor = float(input("Valor a sacar: R$ "))
-        conta.sacar(valor)
-    else:
-        print("Conta não encontrada!")
-
-def depositar():
-    print("\n--- Depositar ---")
-    titular = input("Nome do titular da conta: ")
-    conta = encontrar_conta(titular)
-    if conta:
-        valor = float(input("Valor a depositar: R$ "))
-        conta.depositar(valor)
-    else:
-        print("Conta não encontrada!")
-
-def transferir():
-    print("\n--- Transferir ---")
-    remetente = input("Nome do titular da conta de origem: ")
-    conta_remetente = encontrar_conta(remetente)
-    if not conta_remetente:
-        print("Conta de origem não encontrada!")
-        return
-
-    destinatario = input("Nome do titular da conta de destino: ")
-    conta_destinatario = encontrar_conta(destinatario)
-    if not conta_destinatario:
-        print("Conta de destino não encontrada!")
-        return
-
-    valor = float(input("Valor a transferir: R$ "))
-    conta_remetente.transferencia(conta_destinatario, valor)
-
-def exibir_historico():
-    print("\n--- Histórico de Transações ---")
-    titular = input("Nome do titular da conta: ")
-    conta = encontrar_conta(titular)
-    if conta:
-        conta.exibir_historico()
-    else:
-        print("Conta não encontrada!")
-
-def excluir_conta():
-    print("\n--- Excluir Conta ---")
-    titular = input("Nome do titular da conta a ser excluída: ")
-    conta = encontrar_conta(titular)
-    if not conta:
-        print("Conta não encontrada!")
-        return
-
-    # Verificar saldo
-    if conta.saldo > 0:
-        print(f"Saldo restante: R$ {conta.saldo:.2f}")
-        opcao = input("Deseja transferir o saldo para outra conta? (s/n): ").lower()
-        if opcao == 's':
-            destinatario = input("Nome do titular da conta de destino: ")
-            conta_destino = encontrar_conta(destinatario)
-            if conta_destino:
-                conta.transferencia(conta_destino, conta.saldo)
+    def desativar_conta(self):
+        if self.ativo:
+            if self.saldo == 0:
+                self.ativo = False
+                self.registrar_transacao("Conta desativada")
+                print(f"Conta de {self.titular} desativada com sucesso!")
             else:
-                print("Conta de destino não encontrada!")
-                return
-    elif conta.saldo < 0:
-        print(f"Saldo negativo: R$ {conta.saldo:.2f}")
-        opcao = input("Deseja depositar para zerar a conta? (s/n): ").lower()
-        if opcao == 's':
-            valor = abs(conta.saldo)
-            conta.depositar(valor)
+                print("Não é possível desativar a conta com saldo diferente de zero.")
         else:
-            print("Não é possível excluir a conta com saldo negativo.")
-            return
+            print("A conta já está inativa.")
 
-    # Remover a conta da lista
-    contas.remove(conta)
-    print(f"Conta de {conta.titular} excluída com sucesso!")
+    def registrar_transacao(self, descricao, valor=0):
+        self.historico.append((descricao, valor))
 
-def menu():
-    while True:
-        print("\n=== Menu Bancário ===")
-        print("1: Criar conta")
-        print("2: Exibir saldo")
-        print("3: Sacar")
-        print("4: Depositar")
-        print("5: Realizar transferência")
-        print("6: Exibir histórico de transações")
-        print("7: Excluir conta")
-        print("0: Sair")
-
-        opcao = input("Escolha uma opção: ")
-
-        if opcao == "1":
-            criar_conta()
-        elif opcao == "2":
-            exibir_saldo()
-        elif opcao == "3":
-            sacar()
-        elif opcao == "4":
-            depositar()
-        elif opcao == "5":
-            transferir()
-        elif opcao == "6":
-            exibir_historico()
-        elif opcao == "7":
-            excluir_conta()
-        elif opcao == "0":
-            print("Saindo do sistema...")
-            break
+    def depositar(self, valor):
+        if self.ativo:
+            if valor > 0:
+                self.saldo += valor
+                self.registrar_transacao("Depósito", valor)
+                print(f"Depósito de R${valor:.2f} realizado. Novo saldo: R${self.saldo:.2f}")
+            else:
+                print("O valor do depósito deve ser positivo.")
         else:
-            print("Opção inválida!")
+            print("Conta inativa. Operação não permitida.")
 
-if __name__ == "__main__":
-    menu()
+    def sacar(self, valor):
+        if self.ativo:
+            if 0 < valor <= (self.saldo + self.limite):
+                self.saldo -= valor
+                self.registrar_transacao("Saque", -valor)
+                print(f"Saque de R${valor:.2f} realizado. Novo saldo: R${self.saldo:.2f}")
+            else:
+                print("Valor de saque inválido ou limite excedido.")
+        else:
+            print("Conta inativa. Operação não permitida.")
+
+    def transferencia(self, conta_destino, valor):
+        if self.ativo and conta_destino.ativo:
+            if 0 < valor <= (self.saldo + self.limite):
+                self.saldo -= valor
+                conta_destino.saldo += valor
+                self.registrar_transacao(f"Transferência para {conta_destino.titular}", -valor)
+                conta_destino.registrar_transacao(f"Transferência de {self.titular}", valor)
+                print(f"Transferência de R${valor:.2f} para {conta_destino.titular} realizada com sucesso!")
+            else:
+                print("Valor de transferência inválido ou limite excedido.")
+        else:
+            print("Conta de origem ou destino inativa. Operação não permitida.")
+
+    def exibir_historico(self):
+        print(f"\nHistórico de transações de {self.titular}:")
+        for transacao in self.historico:
+            descricao, valor = transacao
+            if valor == 0:
+                print(f"- {descricao}")
+            else:
+                print(f"- {descricao}: R${abs(valor):.2f} ({'+' if valor > 0 else '-'})")
+        print(f"Saldo atual: R${self.saldo:.2f}")
