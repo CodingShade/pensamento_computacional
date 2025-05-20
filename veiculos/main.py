@@ -7,6 +7,7 @@ from models.Carro import Carro
 from models.Moto import Moto
 from models.Caminhao import Caminhao
 from models.Frota import Frota
+from models.VeiculoEletrico import VeiculoEletrico
 
 # Criando instâncias de cada classe
 voyage = Veiculos("BCE9D36", "Voyage", "Volkswagen", 2018, "Vermelho", 47793)
@@ -102,13 +103,44 @@ fh = Caminhao(placa="JDM9D36",
                            cor="Verde",
                            valor_fipe=149999)
 
-print(f"{gol.calcular_consumo(distancia)} Litros serão gastos a cada 12 km")
-print(f"{cg_125.calcular_consumo(distancia)} Litros serão gastos a cada 20 km")
-print(f"{fh.calcular_consumo(distancia)} Litros serão gastos a cada 5 km")
+byd = VeiculoEletrico(placa="JDN0A00",
+                              modelo="BYD",
+                              marca="BYD",
+                              ano=2021,
+                              cor="Branco",
+                              valor_fipe=950000,
+                              nivel_bateria=65)
 
+print(f"{gol.calcular_consumo(distancia):.2f} Litros serão gastos a cada 12 km")
+print(f"{cg_125.calcular_consumo(distancia):.2f} Litros serão gastos a cada 20 km")
+print(f"{fh.calcular_consumo(distancia):.2f} Litros serão gastos a cada 5 km")
+print(f"{byd.calcular_consumo(distancia):.2f} de KWh gasta a cada 0.15 km")
+
+byd.recarregar(100)
 
 frota = Frota(gol)
 frota.adicionar_veiculo(cg_125)
 frota.adicionar_veiculo(fh)
+frota.adicionar_veiculo(byd)
 
-print(frota.consumo_frota(distancia))
+print(f"{frota.consumo_frota(distancia):.2f}")
+
+# Exemplo:
+veiculos = [
+    Carro(placa="ABC1234", modelo="Gol", marca="Volkswagen", ano=2020, cor="Prata", valor_fipe=50000),
+    Moto(placa="XYZ5678", modelo="CG 160", marca="Honda", ano=2021, cor="Preto", valor_fipe=12000),
+    VeiculoEletrico(placa="ABC1234", modelo="Leaf", marca="Nissan", ano=2022, cor="Branco", valor_fipe=150000, nivel_bateria=80),
+    Caminhao(placa="XYZ5678", modelo="FH", marca="Volvo", ano=2019, cor="Azul", valor_fipe=300000)
+]
+
+# Identificando veículos duplicados pela placa
+duplicados = []
+for i in range(len(veiculos)):
+    for j in range(i + 1, len(veiculos)):
+        if veiculos[i] == veiculos[j]:
+            duplicados.append((veiculos[i], veiculos[j]))
+
+# Exibindo os veículos duplicados
+print("\nVeículos duplicados encontrados:")
+for v1, v2 in duplicados:
+    print(f"Duplicado: {v1} e {v2}")

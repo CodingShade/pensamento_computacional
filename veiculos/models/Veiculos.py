@@ -1,3 +1,5 @@
+import re
+
 class Veiculos:
     """
     Classe com as principais funcionalidades do sistema de veiculos, como placas, veiculos, etc.
@@ -25,6 +27,21 @@ class Veiculos:
     def getPlaca(self) -> str:
         """Retorna a placa do veiculo"""
         return self.__placa
+    
+    def get_placa(self) -> str:
+        """Retorna a placa do veículo"""
+        return self.__placa
+
+    def set_placa(self, placa: str) -> bool:
+        """Método que altera a placa do Veículo, se seguir o padrão brasileiro (3 letras e 4 números)
+        Argumento: placa (str): nova placa
+        Saída: True se a placa for válida e alterada, False caso contrário
+        """
+        padrao_placa = r'^[A-Z]{3}[0-9]{4}$'
+        if re.match(padrao_placa, placa):
+            self.__placa = placa
+            return True
+        return False
 
     def setValorFipe(self, valor: float) -> None:
         """Método que altera o valor da Fipe do Veículo
@@ -42,7 +59,11 @@ class Veiculos:
         """
         pass
         
-
+    def __eq__(self, other):
+        """Compara dois veículos pela placa"""
+        if isinstance(other, Veiculos):
+            return self.__placa == other.__placa
+        return False
 
 
     
