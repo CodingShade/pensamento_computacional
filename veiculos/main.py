@@ -3,6 +3,10 @@ from models.Veiculos import Veiculos
 from models.CarroCombustao import CarroCombustao
 from models.CarroEletrico import CarroEletrico
 from models.CarroConvEletrico import CarroConvEletrico
+from models.Carro import Carro
+from models.Moto import Moto
+from models.Caminhao import Caminhao
+from models.Frota import Frota
 
 # Criando instâncias de cada classe
 voyage = Veiculos("BCE9D36", "Voyage", "Volkswagen", 2018, "Vermelho", 47793)
@@ -52,6 +56,9 @@ fusca_eletrico = CarroConvEletrico(placa="IAA0D36",
                                    autonomia=150,
                                    nivel_bateria=65)
 
+#lista para testar o metodo calcular_consumo
+
+
 # Exibindo as informações dos veículos
 print("Informações dos veículos: ")
 print("\n\n######## Veículo: #########")
@@ -70,3 +77,38 @@ fusca_eletrico.abastecer(10)
 # Exibindo as informações do carro convertido em elétrico
 print("\n\n######## Carro conv. elétrico após abastecimento: #########")
 print(fusca_eletrico)
+
+distancia = float(input("Digite a distancia:"))
+
+
+gol = Carro(placa="JDM9D36",
+                           modelo="Jetta GLI",
+                           marca="Volkswagen",
+                           ano=2025,
+                           cor="Vermelho",
+                           valor_fipe=250000)
+
+cg_125 = Moto(placa="JDM9D36",
+                           modelo="cg_125",
+                           marca="Honda",
+                           ano=2025,
+                           cor="Amarelo",
+                           valor_fipe=100000)
+
+fh = Caminhao(placa="JDM9D36",
+                           modelo="FH",
+                           marca="Volvo",
+                           ano=2025,
+                           cor="Verde",
+                           valor_fipe=149999)
+
+print(f"{gol.calcular_consumo(distancia)} Litros serão gastos a cada 12 km")
+print(f"{cg_125.calcular_consumo(distancia)} Litros serão gastos a cada 20 km")
+print(f"{fh.calcular_consumo(distancia)} Litros serão gastos a cada 5 km")
+
+
+frota = Frota(gol)
+frota.adicionar_veiculo(cg_125)
+frota.adicionar_veiculo(fh)
+
+print(frota.consumo_frota(distancia))
