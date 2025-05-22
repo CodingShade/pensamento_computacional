@@ -8,6 +8,7 @@ from models.Moto import Moto
 from models.Caminhao import Caminhao
 from models.Frota import Frota
 from models.VeiculoEletrico import VeiculoEletrico
+from utils.erros import *
 
 # Criando instâncias de cada classe
 voyage = Veiculos("BCE9D36", "Voyage", "Volkswagen", 2018, "Vermelho", 47793)
@@ -79,7 +80,6 @@ fusca_eletrico.abastecer(10)
 print("\n\n######## Carro conv. elétrico após abastecimento: #########")
 print(fusca_eletrico)
 
-distancia = float(input("Digite a distancia:"))
 
 
 gol = Carro(placa="JDM9D36",
@@ -114,6 +114,7 @@ byd = VeiculoEletrico(placa="JDN0A00",
 print(f"{gol.calcular_consumo(distancia):.2f} Litros serão gastos a cada 12 km")
 print(f"{cg_125.calcular_consumo(distancia):.2f} Litros serão gastos a cada 20 km")
 print(f"{fh.calcular_consumo(distancia):.2f} Litros serão gastos a cada 5 km")
+
 print(f"{byd.calcular_consumo(distancia):.2f} de KWh gasta a cada 0.15 km")
 
 byd.recarregar(100)
@@ -121,6 +122,7 @@ byd.recarregar(100)
 frota = Frota(gol)
 frota.adicionar_veiculo(cg_125)
 frota.adicionar_veiculo(fh)
+
 frota.adicionar_veiculo(byd)
 
 print(f"{frota.consumo_frota(distancia):.2f}")
@@ -144,3 +146,42 @@ for i in range(len(veiculos)):
 print("\nVeículos duplicados encontrados:")
 for v1, v2 in duplicados:
     print(f"Duplicado: {v1} e {v2}")
+
+#TRATATIVA DE EXCEÇÕES
+try:
+    distancia = float(input("Digite a distancia: "))
+    if distancia < 0:
+        raise DistanciaNegativa("A distância deve ser maior que zero.")
+
+except ValueError as erro:
+    print(f"Erro: {erro}")
+except DistanciaNegativa as erro:
+    print(f"Erro: {erro}") 
+
+try:
+    placa = input("Digite a placa do veículo: ")
+    if placa[:3].isalpha() and placa[4:5].isalpha() and placa[3:4].isnumeric() and placa[5:7].isnumeric():
+        raise PlacaInvalida("A placa deve seguir o padrão ABC1D23.")
+except ValueError as erro:
+    print(f"Erro: {erro}")
+except PlacaInvalida as erro:
+    print(f"Erro: {erro}")
+
+try:
+    for veiculo in frota:
+        if not veiculo:
+            raise ListaVazia("A lista de veículos está vazia.")
+        
+        distancia = float(input("Digite a distância: "))
+
+        if distancia < 0:
+            raise DistanciaNegativa("A distância deve ser maior que zero.")
+        consumo = veiculo.calcular_consumo(distancia)
+        print(f"Veículo: {veiculo.get_placa()}, Consumo: {consumo:.2f} litros")
+except ValueError as erro:
+    print(f"Erro: {erro}")
+except DistanciaNegativa as erro:
+    print(f"Erro: {erro}")
+except ListaVazia as erro:
+    print(f"Erro: {erro}")
+  

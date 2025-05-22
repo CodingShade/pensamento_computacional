@@ -1,5 +1,3 @@
-
-
 class Frota:
     def __init__(self, Veiculo):
         self.__frota = [Veiculo]
