@@ -172,21 +172,21 @@ lista.append(cg_125)
 lista.append(fh)102
 lista.append(gol)'''
 
-    try:
-        for veiculo in veiculos:
-            if not veiculo:
-                raise ListaVazia("A lista de veículos está vazia.")
+try:
+    for veiculo in veiculos:
+        if not veiculo:
+            raise ListaVazia("A lista de veículos está vazia.")
             
-            distancia = float(input("Digite a distância: "))
+        distancia = float(input("Digite a distância: "))
 
-            if distancia < 0:
-                raise DistanciaNegativa("A distância deve ser maior que zero.")
-            consumo = veiculo.calcular_consumo(distancia)
-            print(f"Veículo: {veiculo.get_placa()}, Consumo: {consumo:.2f} litros")
-    except ValueError as erro:
-        print(f"Erro: {erro}")
-    except DistanciaNegativa as erro:
-        print(f"Erro: {erro}")
-    except ListaVazia as erro:
-        print(f"Erro: {erro}")
-  
+        if distancia < 0:
+            raise DistanciaNegativa("A distância deve ser maior que zero.")
+        consumo = veiculo.calcular_consumo(distancia)
+        print(f"Veículo: {veiculo.get_placa()}, Consumo: {consumo:.2f} litros")
+except ValueError as erro:
+    print(f"Erro: {erro}")
+except DistanciaNegativa as erro:
+    print(f"Erro: {erro}")
+except ListaVazia as erro:
+    print(f"Erro: {erro}")
+
