@@ -18,6 +18,9 @@ class SistemaVeiculos:
         # Lista para armazenar os veículos cadastrados
         self.veiculos = []
         
+        #Lista para armazenar os proprietários cadastrados
+        self.proprietarios = []
+
         # Configura o container para as telas
         self.container = tk.Frame(root)
         self.container.pack(fill="both", expand=True)
@@ -30,6 +33,7 @@ class SistemaVeiculos:
         self.tela_principal = tk.Frame(self.container)
         self.tela_cadastro = tk.Frame(self.container)
         self.tela_listagem = tk.Frame(self.container)
+        self.tela_proprietario = tk.Frame(self.container)
         
         # Posiciona as telas no mesmo local
         for tela in (self.tela_principal, self.tela_cadastro, self.tela_listagem):
@@ -39,6 +43,8 @@ class SistemaVeiculos:
         self.configurar_tela_principal()
         self.configurar_tela_cadastro()
         self.configurar_tela_listagem()
+        self.configurar_tela_proprietario()
+
         
         # Mostrar a tela principal
         self.mostrar_tela(self.tela_principal)
@@ -56,6 +62,10 @@ class SistemaVeiculos:
         titulo.pack(pady=(0, 30))
         
         # Botões
+        btn_proprietario = tk.Button(frame, text="Cadastrar Proprietário", width=25, height=2,
+                                     command=lambda: self.mostrar_tela(self.tela_proprietario))
+        btn_proprietario.pack(pady=10)
+
         btn_cadastrar = tk.Button(frame, text="Cadastrar Novo Veículo", width=25, height=2,
                                  command=lambda: self.mostrar_tela(self.tela_cadastro))
         btn_cadastrar.pack(pady=10)
@@ -67,6 +77,17 @@ class SistemaVeiculos:
         btn_sair = tk.Button(frame, text="Sair", width=25, height=2,
                            command=self.root.quit)
         btn_sair.pack(pady=10)
+
+    def configurar_tela_proprietario(self):
+        # Título
+        titulo = tk.Label(self.tela_proprietario, text="CADASTRO DE PROPRIETARIO", font=("Arial", 16, "bold"))
+        titulo.pack(pady=20)
+
+        # Frame para o formulário
+        form_frame = tk.Frame(self.tela_proprietario, padx=20)
+        form_frame.pack(fill="both")
+
+       
     
     def configurar_tela_cadastro(self):
         # Título
